@@ -1,5 +1,6 @@
 #include <iostream>
 #include "BST.h"
+#include "SkipList.h"   //Call the SkipList class
 int main() {
     BST* tree = new BST;
     tree->Insert("car");
