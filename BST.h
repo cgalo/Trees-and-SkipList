@@ -11,15 +11,21 @@ class BST {
 private:
     struct Node
     {
-        char data[50];  //Use a char array of length of 50 as data
+        char data[50] = {};                         //Use a char array of length of 50 as data
         int count;                                  //Frequency of the occurrence of the word
-        Node *leftChild, *rightChild, *parentNode;  //Reference nodes, to the node's parent and children
+        Node *leftChild, *rightChild;  //Reference nodes, to the node's parent and children
+        Node ()
+        {
+            for (char & i : this->data) i = '\0';   //Leave the data array of this node empty
+            this->count = 0;                        //Set the count/frequency to 0
+            leftChild = rightChild = nullptr;       //Set all children pointers to null pointers
+        }   //End of constructor, no given parameter(s)
 
-        Node(char* data)  //Constructor given a string
+        explicit Node(char data[])  //Constructor given a string
         {
             strcpy(this->data, data);   //Insert the given data into the new node data's
             count = 1;                  //Set frequency to 1
-            parentNode = leftChild = rightChild = nullptr;  //Set all pointers to null
+            leftChild = rightChild = nullptr;  //Set all pointers to null
         }   //End of Node constructor
     };          //End of struct Node
     Node* root;                 //Top of the tree, first node in the tree
@@ -27,7 +33,7 @@ private:
     int totItems;               //Total nodes and count data in the tree
     int distinctItems;          //Total of unique/distinct tree
 
-    Node* search(char* word);   //Looks for node w/ word in the tree, returns node or parent node
+    Node* search(char word[]);   //Looks for node w/ word in the tree, returns node or parent node
     void inOrderPrint(Node* currentNode);
     int height(Node* node);
 
@@ -38,7 +44,7 @@ public:
     BST();                  //Basic constructor for the Binary Search Tree
     ~BST();                 //Destructor for the tree for garbage collection
 
-    void Insert(char* word);//Insert function, either updates count or insert new node with given word
+    void Insert(char word[]);//Insert function, either updates count or insert new node with given word
     void TreeHeight();      //Get the tree height
     void print();
     void getDistinctItems();
