@@ -3,4 +3,4 @@ project(Trees___SkipList)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Trees___SkipList main.cpp BST.cpp BST.h SkipList.cpp SkipList.h RBT.cpp RBT.h)
+add_executable(Trees___SkipList main.cpp BST.cpp BST.h SkipList.cpp SkipList.h RBT.cpp RBT.h AVL.cpp AVL.h)

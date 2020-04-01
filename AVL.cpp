@@ -4,6 +4,7 @@
 
 #include "AVL.h"
 
+//Constructor for AVL class
 AVL::AVL():root(nullptr),totKeyComparison(0), totItems(0), distinctItems(0){}
 
 AVL::~AVL()
