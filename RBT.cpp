@@ -121,42 +121,6 @@ void RBT::InsertFixUp(RBT::Node *z)
      * - Helper method called after inserting a node in the Insert method
      * */
 
-   /* while (insertNode->parent->color == red)    //While the color of the insertNode's parent is red
-    {
-        Node* parentNode = insertNode->parent;  //Save the parent pointer to keep track of it easier
-        if (parentNode == insertNode->parent->parent->LCH)  //If the parent is a left child of it's parent
-        {
-            Node* uncleNode = insertNode->parent->parent->RCH;  //Let y be z's (right) uncle
-            if (uncleNode != nullptr && uncleNode->color == red)                        //If the uncle is color red
-            {                                           //Case 1
-                parentNode->color = black;              //Change the insertNode's parent color to black
-                uncleNode->color = black;               //Change the uncle node's color to black
-                parentNode->parent->color = red;        //Make the grandparent node's color red
-                insertNode = parentNode->parent;        //Move the insertNode pointer its grandparent node
-            }   //End of if the uncle node is color red, case 1
-            else if (insertNode == parentNode->RCH)     //If the insertNode is a RCH
-            {
-                insertNode = parentNode;                //Bring the insertNode up to where the parentNode is
-                LeftRotate(insertNode);                 //Perform left-rotation
-            }   //End of else-if the insertNode is a RCH
-            else
-            {
-                parentNode->color = black;              //Make the parentNode's color black
-                parentNode->parent->color = red;        //Make the grandparent node's color red
-                RightRotate(parentNode->parent);        //Perform Right-Rotation(RR) by passing the grandparent node
-            }   //End of else
-        }   //End if the uncle
-        else
-        {
-            Node* granpaNode    = insertNode->parent->parent;  //Get the granparent node of the insert node
-            Node* uncleNode     = granpaNode->LCH;              //Get the uncle node of the insertNode
-            granpaNode->color   = red;                          //Change the grandparent node's color to red
-            uncleNode->color    = black;                        //Grandpa passes the blackness to the uncle node
-            parentNode->color   = black;                        //Grandpa passes the blackness to the parent node
-        }   //End of else
-        root->color = black;                            //The root is always black
-    }   //End of while-loop*/
-
    while (z->parent != nullptr && z->parent->color == red)
    {
        if (z->parent == z->parent->parent->LCH)
@@ -181,15 +145,6 @@ void RBT::InsertFixUp(RBT::Node *z)
                z->parent->parent->color = red;
                RightRotate(z->parent->parent);
            }
-
-           /*
-           Node* granpaNode     = z->parent->parent;  //Get the granparent node of the insert node
-           Node* uncleNode      = granpaNode->LCH;              //Get the uncle node of the insertNode
-           granpaNode->color    = red;                          //Change the grandparent node's color to red
-           z->parent->color     = black;                        //Grandpa passes the blackness to the parent node
-           if (uncleNode != nullptr)
-               uncleNode->color    = black;                     //Grandpa passes the blackness to the uncle node
-*/
        }
        else
        {
@@ -204,8 +159,8 @@ void RBT::InsertFixUp(RBT::Node *z)
                uncleNode->color = black;
                z = grandpaNode;
            }    //End of if the uncle is red
-           else{
-               //Case 2: Z is a LCH, do a Right-Rotation
+           else
+           {    //Case 2: Z is a LCH, do a Right-Rotation
                if (z == parentNode->LCH)    //If z is a left-children to its parent
                {
                    RightRotate(parentNode); //Perform a right-rotation
