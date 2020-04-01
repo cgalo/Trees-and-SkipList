@@ -37,10 +37,10 @@ private:
     int totKeyComparison;                   //Keep track of all key comparisons completed throughout
 
     Node* search    (char word[]);          //Traverse the tree to find a node with the given <word>/data
-    void InsertFixUp(Node* z);     //Helper method to maintain RBT rules after inserting a new node in the tree
-    void LeftRotate (Node* X);           //Perform a left-rotation (LR) in the tree
-    void RightRotate(Node* pt);           //Perform a right-rotate (RR) in the tree
-    void inOrderTraversal(Node* node);
+    void InsertFixUp(Node* z);              //Helper method to maintain RBT rules after inserting a new node in the tree
+    void LeftRotate (Node* X);              //Perform a left-rotation (LR) in the tree
+    void RightRotate(Node* pt);             //Perform a right-rotate (RR) in the tree
+    void inOrderTraversal(Node* node);      //Traverse the tree in order
     ////The following method should never be called besides by the destructor -> ~BST()
     void treeDestructor (Node* currentNode);    //Traverses the tree to destroy every node in the tree
 
