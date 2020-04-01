@@ -1,14 +1,17 @@
 #include <iostream>
 #include "BST.h"
 #include "SkipList.h"   //Call the SkipList class
+#include "RBT.h"
 int main() {
-    BST* tree = new BST;
+    RBT* tree = new RBT;
     tree->Insert("car");
     tree->Insert("ann");
     tree->Insert("bar");
     tree->Insert("segura");
-    tree->Insert("segura");
+    tree->Insert("rob");
+    tree->Insert("boston");
+
     tree->print();
-    tree->TreeHeight();
+
     return 0;
 }
