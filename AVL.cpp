@@ -103,13 +103,9 @@ void AVL::Insert(char *X)
 
     Y = new Node(X);   // Make a new node with it's data equal to the X parameter
 
-
-
-
     totKeyComparison++; //Increase key comparison for report
     if (strcmp(X, Q->data) < 0) Q->LCH = Y; // Will Y be Q's new left or right child?
     else           Q->RCH = Y;
-
 
      /* So far, except for keeping track of F and A, we have done exactly
       * the same “dumb” BST insert we’ve seen before.  Now, it’s time to do
@@ -173,19 +169,20 @@ void AVL::Insert(char *X)
         return;     //Exit Insert method
     }
 
-    // If we took neither of the two returns just above, then the tree WAS
-    // acceptably imbalanced, and is now UNACCEPTABLY IMBALANCED. Which
-    // rotation type do we need to apply?
+     /* If we took neither of the two returns just above, then the tree WAS
+      * acceptably imbalanced, and is now UNACCEPTABLY IMBALANCED. Which
+      * rotation type do we need to apply?
+      * */
 
     if (d==1)  // this is a left imbalance (left subtree too tall).
     {           // Is it LL or LR?
         if (B->BF==1) // LL rotation
         {
+            /* Change the child pointers at A and B to reflect the rotation
+             * Adjust the BFs at A & B
+             * */
+
             LLTot++;    //Increase count of rotations
-            // Change the child pointers at A and B to reflect the rotation
-            // Adjust the BFs at A & B
-            // <<< LEFT FOR YOU TO WRITE (3-4 LOC) >>>
-            // See Schematic (1)
             A->LCH  = B->RCH;   //Make A's RCH be B's RCH
             B->RCH  = A;        //B's new RCH is node A
             A->BF   = 0;        //Set A's BF to 0
@@ -269,8 +266,8 @@ void AVL::Insert(char *X)
             {
                 /* Set the new BF’s at A and B, based on the BF at C.
                  * Note: There are 3 sub-cases
-                 * <<< LEFT FOR YOU TO WRITE (3 LOC/CASE) >>>
-                 */
+                 * */
+
                 //Case A
                 case 0:
                     C->LCH   = B;    //Make C's RCH node B
@@ -307,17 +304,20 @@ void AVL::Insert(char *X)
             B = C;     // B is the root of the now-rebalanced subtree (recycle)
         }   //End of RL rotation
     }   //End of Right-Rotation (RR)
-    // Finish up:
-    // Regardless, the subtree rooted at B has been rebalanced, and needs to
-    // be the new child of F.  The original subtree of F had root A.
+
+     /* Finish up:
+      * Regardless, the subtree rooted at B has been rebalanced, and needs to
+      * be the new child of F.  The original subtree of F had root A.
+      * */
 
     // did we rebalance the whole tree’s root?
     if (F == nullptr) {root=B; return;} // B is the tree’s new root - done
 
-    // The root of what we rebalanced WAS A; now it’s B.  If the subtree we
-    // rebalanced was LEFT of F, then B needs to be left of F;
-    // if A was RIGHT of F, then B now needs to be right of F.
-    //
+    /* The root of what we rebalanced WAS A; now it’s B.  If the subtree we
+     * rebalanced was LEFT of F, then B needs to be left of F;
+     * if A was RIGHT of F, then B now needs to be right of F.
+     * */
+
     if (A == F->LCH) {F->LCH=B; return;}
     if (A == F->RCH) {F->RCH=B; return;}
     std::cout << "We should never be here\n";
