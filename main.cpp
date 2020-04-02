@@ -2,16 +2,23 @@
 #include "BST.h"
 #include "SkipList.h"   //Call the SkipList class
 #include "RBT.h"
+#include "AVL.h"
 int main() {
-    RBT* tree = new RBT;
-    tree->Insert("car");
-    tree->Insert("ann");
-    tree->Insert("bar");
-    tree->Insert("segura");
-    tree->Insert("rob");
-    tree->Insert("boston");
+    AVL* tree = new AVL;
+    tree->Insert("MAR");
+    tree->Insert("MAY");
+    tree->Insert("NOV");
+    tree->Insert("AUG");
+    tree->Insert("APR");
+    tree->Insert("JAN");
+    tree->Insert("DEC");
+    tree->Insert("JUL");
+    tree->Insert("FEB");
+    tree->Insert("JUN");
+    tree->Insert("OCT");
+    tree->Insert("SEP");
 
-    tree->print();
+    //tree->print();
 
     return 0;
 }

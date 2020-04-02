@@ -43,7 +43,7 @@ public:
     AVL();                                  //Basic constructor for the AVL class
     ~AVL();                                 //Destructor for the AVL class, for garbage collection
 
-    void Insert (char word[]);              //Insert word into tree, or if word already exists then increase count
+    void Insert (char X[]);              //Insert word into tree, or if word already exists then increase count
 
 
 };
