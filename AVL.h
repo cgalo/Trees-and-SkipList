@@ -34,17 +34,25 @@ private:
 
     Node* root;                             //The top of the tree
     int totKeyComparison;                   //Keep track of the total key comparisons done in the search method
-    int totItems;                           //Total nodes and count data in the tree
-    int distinctItems;                      //Total of unique/distinct tree
+    int totWords;                           //Total nodes and count data in the tree
+    int distinctWords;                      //Total of unique/distinct tree
+    int totBFChanges;                       //Total BF changes done through the Insert() method
+    int LLTot;                              //Total Left-Left Rotations done in the Insert() method
+    int LRTot;                              //Total Left-Right Rotations done in the Insert() method
+    int RRTot;                              //Total Right-Right Rotations done in the Insert() method
+    int RLTot;                              //Total Right-Left Rotations done in the Insert() method
+    int NoRotTot;                           //Total of times Insert() method was called but no rotation was needed
 
+    void inOrderTraversal   (Node* node);   //Do an in order traversal to get information from the tree
+    int calcHeight          (Node* node);   //Recurse through the tree, returns the height of the tree
     ////The following method should never be called besides by the destructor -> ~BST()
-    void treeDestructor (Node* currentNode);    //Traverses the tree to destroy every node in the tree
+    void treeDestructor     (Node* currentNode);    //Traverses the tree to destroy every node in the tree
 public:
     AVL();                                  //Basic constructor for the AVL class
     ~AVL();                                 //Destructor for the AVL class, for garbage collection
 
-    void Insert (char X[]);              //Insert word into tree, or if word already exists then increase count
-
+    void Insert (char X[]);                 //Insert word into tree, or if word already exists then increase count
+    void printMetrics();                    //Print all information needed for the report, calls inOrderTraversal
 
 };
 
