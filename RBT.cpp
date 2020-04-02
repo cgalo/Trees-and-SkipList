@@ -121,65 +121,58 @@ void RBT::InsertFixUp(RBT::Node *z)
      * - Helper method called after inserting a node in the Insert method
      * */
 
-   while (z->parent != nullptr && z->parent->color == red)
-   {
-       if (z->parent == z->parent->parent->LCH)
-       {
-           Node* y = z->parent->parent->RCH;    // let y be z's (right) uncle
-           if (y != nullptr && y->color == red)
-           {
-               z->parent->color = black;        // Case 1 (re-color only)
-               y->color = black; 		// Case 1
-               z->parent->parent->color = red; 		// Case 1
-               z = z->parent->parent;			// Case 1
-           }    //End of if
-           else if (z == z->parent->RCH)
-           {
-               z = z->parent;
-               LeftRotate(z);
-           }    //End of else-if
-
-           z->parent->color = black;
-           if (z->parent->parent != nullptr)
-           {
-               z->parent->parent->color = red;
-               RightRotate(z->parent->parent);
-           }
-       }
-       else
-       {
-           Node* parentNode = z->parent;                //Parent node
-           Node* grandpaNode = parentNode->parent;      //Grandparent node
-           Node* uncleNode = z->parent->parent->LCH;    //Uncle node
-           //Case 1: Uncle of Z is also red, only recolor
-           if (uncleNode != nullptr && uncleNode->color == red)
-           {
-               grandpaNode->color = red;
-               parentNode->color = black;
-               uncleNode->color = black;
-               z = grandpaNode;
-           }    //End of if the uncle is red
-           else
-           {    //Case 2: Z is a LCH, do a Right-Rotation
-               if (z == parentNode->LCH)    //If z is a left-children to its parent
-               {
-                   RightRotate(parentNode); //Perform a right-rotation
-                   z = parentNode;
-                   parentNode = z->parent;
-               }    //End of if z is a LCH
-               //Case 3: z is LCH, perform a left-rotation
-               LeftRotate(grandpaNode);
-               //Swap colors between parent and grandpa node
-               int temp = parentNode->color;
-               parentNode->color = grandpaNode->color;
-               grandpaNode->color = temp;
-               //End of swap
-               z = parentNode;
-           }    //End of else
-       }
-   }    //End of while-loop
+    while (z->parent != nullptr && z->parent->color == red)
+    {
+        if (z->parent->parent != nullptr && z->parent == z->parent->parent->LCH) //If z's parent is a LCH of its parent?
+        {
+            Node* y = z->parent->parent->RCH;       //Let y be z's (right) uncle
+            if (y != nullptr && y->color == red)    //Case 1, recolor only
+            {
+                z->parent->color = black;           //Set z's parent to black
+                y->color = black;                   //Set y to black
+                z->parent->parent->color = red;     //Set z's grandparent to red
+                z = z->parent->parent;              //Move z pointer up to its grandparent
+            }   //End of Case 1
+            else
+            {
+                //Case 2
+                if (z == z->parent->RCH)           //Z is a RCH to its parent
+                {
+                    z = z->parent;                 //Move z to its parent node
+                    LeftRotate(z);                 //Perform a right-rotation
+                }   //End of case 2
+                //Case 3
+                z->parent->color = black;
+                z->parent->parent->color = red;
+                RightRotate(z->parent->parent);
+            }   //End of else-if z is a RCH to its parent
+        }   //End of if z's parent
+        else    //Else the z's parent is a RCH of its grandparent
+        {
+            Node* y = z->parent->parent->LCH;       //Let y be z's (left) uncle
+            if (y != nullptr && y->color == red)    //Case 1, recolor only
+            {
+                z->parent->color = black;           //Set z's parent to black
+                y->color = black;                   //Set y to black
+                z->parent->parent->color = red;     //Set z's grandparent to red
+                z = z->parent->parent;              //Move z pointer up to its grandparent
+            }   //End of case 1
+            else
+            {
+                //Case 2
+                if (z == z->parent->LCH)            //Z is a LCH to its parent
+                {
+                    z = z->parent;                  //Move z to its parent node
+                    RightRotate(z);                  ///Might want to change to RightRotation
+                }   //End of case 2, if z is a LCH to its parent
+                //Case 3
+                z->parent->color = black;
+                z->parent->parent->color = red;
+                LeftRotate(z->parent->parent);
+            }   //End of else, if Case 2 & 3
+        }   //End of else, z's parent is a RCH of its grandparent
+    }   //End of while-loop
    root->color = black;
-
 }   //End of InsertFixUp method
 
 void RBT::LeftRotate(RBT::Node *X)
@@ -205,34 +198,34 @@ void RBT::LeftRotate(RBT::Node *X)
     X->parent = Y;                      //....makes X's parent be Y
 }   //End of LeftRotate method
 
-void RBT::RightRotate(RBT::Node *pt)
+void RBT::RightRotate(RBT::Node *X)
 {
     /* RightRotate private method, parameter(s): struct Node
      * Objective: Perform a Right-Rotation on the RBTree to maintain the tree 'balanced'
      * Notes:
+     *  - The opposite of the LeftRotate method
      *  - Called in the InsertFixUp method
      *  - This assumes root's parent is nil & X' RCH != nil
      * */
 
-    ////Review this code by comparing to the left rotation
-    Node* pt_left = pt->LCH;
-    pt->LCH = pt_left->RCH;
+    Node* Y = X->LCH;
+    X->LCH = Y->RCH;
 
-    if (pt->LCH != nullptr)
-        pt->LCH->parent = pt;
+    if (X->LCH != nullptr)
+        X->LCH->parent = X;
 
-    pt_left->parent = pt->parent;
+    Y->parent = X->parent;
 
-    if (pt->parent == nullptr)
-        root = pt_left;
+    if (X->parent == nullptr)
+        root = Y;
 
-    else if (pt == pt->parent->LCH)
-        pt->parent->LCH = pt_left;
+    else if (X == X->parent->LCH)
+        X->parent->LCH = Y;
     else
-        pt->parent->RCH = pt_left;
+        X->parent->RCH = Y;
 
-    pt_left->RCH = pt;
-    pt->parent = pt_left;
+    Y->RCH = X;
+    X->parent = Y;
 
 }   //End of RightRotate method
 

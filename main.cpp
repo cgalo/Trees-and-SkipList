@@ -4,7 +4,7 @@
 #include "RBT.h"
 #include "AVL.h"
 int main() {
-    AVL* tree = new AVL;
+    RBT* tree = new RBT;
     tree->Insert("MAR");
     tree->Insert("MAY");
     tree->Insert("NOV");
