@@ -249,10 +249,10 @@ void RBT::RightRotate(RBT::Node *X)
 
 }   //End of RightRotate method
 
-void RBT::printMetrics()
+void RBT::displayStatistics()
 {
 
-    /* printMetrics public method, parameter(s): None
+    /* displayStatistics public method, parameter(s): None
      * Objective: Print the final results of the tree
      * Metrics:
      *  - Distinct Words

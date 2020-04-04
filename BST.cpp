@@ -121,17 +121,44 @@ int BST::calcHeight(BST::Node *node)
     else                return rightH + 1;          //Add to the right height
 }   //End of height method
 
-void BST::inOrderPrint(BST::Node *currentNode)
+void BST::inOrderTraversal(BST::Node *currentNode)
 {
-    /* inOrderPrint private method, parameter(s): Node Pointer
+    /* inOrderTraversal private method, parameter(s): Node Pointer
      * Objective: Recurse through the tree and print nodes in-order
      * It is called by the printTree() public method
      */
 
     if (currentNode == nullptr)                 //If we reach a leaf
         return;                                 //Exit
-    inOrderPrint(currentNode->leftChild);       //Traverse through the left side
+    inOrderTraversal(currentNode->leftChild);       //Traverse through the left side
     totWords += currentNode->count;             //Add the count of the node to totItems
     distinctWords++;                            //Add +1 to total nodes in the tree
-    inOrderPrint(currentNode->rightChild);      //Traverse through the right side
+    inOrderTraversal(currentNode->rightChild);      //Traverse through the right side
 }   //End of inOrderPrint method
+
+
+void BST::displayStatistics()
+{
+
+    /* displayStatistics public method, parameter(s): None
+     * Objective: Print the final results of the tree
+     * Metrics:
+     *  - Distinct Words
+     *  - Total Words
+     *  - Height
+     *  - Reference Changes
+     *  - Key Comparisons
+     *  - Elapsed Time
+     *  */
+
+    int height = calcHeight(root);  //Recurse the tree to get the height of it
+    inOrderTraversal(root);         //This helps to calculate total words and distinct words
+
+    //Display results
+    std::cout << "Distinct Words: "     << distinctWords    << std::endl;   //Distinct Words
+    std::cout << "Total Words: "        << totWords         << std::endl;   //Total words
+    std::cout << "Height: "             << height           << std::endl;   //Height of the tree
+    std::cout << "Key Comparisons: "    << totKeyComparison << std::endl;   //Total key comparisons done
+    std::cout << "Reference Changes: "  << std::endl;
+    std::cout << "Elapsed Time: "       << std::endl;   //Elapsed Time
+}   //End of print method

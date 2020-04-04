@@ -35,7 +35,7 @@ private:
     long distinctWords;                             //Total of nodes in the tree
 
     Node* search(char word[]);                      //Looks for node w/ word in the tree, returns node or parent node
-    void inOrderPrint(Node* currentNode);           //Recurse, in order, the tree to calculate totWords & distinctWords
+    void inOrderTraversal(Node* currentNode);           //Recurse, in order, the tree to calculate totWords & distinctWords
     int calcHeight(Node* node);                     //Recurse the tree and return the current height of it
 
     ////The following method should never be called besides by the destructor -> ~BST()
@@ -46,7 +46,7 @@ public:
     ~BST();                                         //Destructor for the tree for garbage collection
 
     void Insert(char word[]);                       //Basic insert function, either inserts or updates count of a node
-    void printMetrics();                            //Display all the metrics for BSTree
+    void displayStatistics();                       //Display all the metrics for BSTree
 };
 
 

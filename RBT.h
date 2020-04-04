@@ -58,7 +58,7 @@ public:
     ~RBT();                                 //Destructor for the RBT class
 
     void Insert (char word[]);              //Basic insert function, either inserts or updates count of a node
-    void printMetrics();                    //Display all metrics for RBTree
+    void displayStatistics();               //Display all metrics for RBTree
 
 };
 

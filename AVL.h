@@ -52,7 +52,7 @@ public:
     ~AVL();                                 //Destructor for the AVL class, for garbage collection
 
     void Insert (char X[]);                 //Insert word into tree, or if word already exists then increase count
-    void printMetrics();                    //Print all information needed for the report, calls inOrderTraversal
+    void displayStatistics();               //Print all information needed for the report, calls inOrderTraversal
 
 };
 

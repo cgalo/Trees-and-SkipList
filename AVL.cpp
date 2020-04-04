@@ -325,10 +325,10 @@ void AVL::Insert(char *X)
 
 }   //End of insert method
 
-void AVL::printMetrics()
+void AVL::displayStatistics()
 {
 
-    /* printMetrics public method, parameter(s): None
+    /* displayStatistics public method, parameter(s): None
      * Objective: Print the final results of the tree
      * Metrics:
      *  - Distinct Words
