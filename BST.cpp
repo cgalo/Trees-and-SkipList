@@ -134,7 +134,4 @@ void BST::inOrderPrint(BST::Node *currentNode)
     totWords += currentNode->count;             //Add the count of the node to totItems
     distinctWords++;                            //Add +1 to total nodes in the tree
     inOrderPrint(currentNode->rightChild);      //Traverse through the right side
-}
-
-
-
+}   //End of inOrderPrint method
