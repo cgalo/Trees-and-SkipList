@@ -7,12 +7,22 @@
 
 RBT::RBT()
 {
-    this->root = nullptr;           //Set the root to nil
-    this->totKeyComparison = 0;    //Initialize the total key comparisons
+    this->root              = nullptr;  //Set the root to nil
+    this->totKeyComparison  = 0;        //Keep track of the total key comparisons done in the Insert() method
+    this->totWords          = 0;        //Total nodes and count data in the tree
+    this->distinctWords     = 0;        //Total of unique/distinct tree nodes
+    this->recolorTot        = 0;        //Keep track of every time we recolor a node
+    this->leftRotTot        = 0;        //Keep track of every time a left rotation is perform
+    this->rightRotTot       = 0;        //Keep track of every time a right rotation is perform
 }   //End of constructor
 
 RBT::~RBT()
 {
+    totKeyComparison    = 0;            //Keep track of the total key comparisons done in the Insert() method
+    totWords            = 0;            //Total nodes and count data in the tree
+    distinctWords       = 0;            //Total of unique/distinct tree nodes
+    leftRotTot          = 0;            //Keep track of every time a left rotation is perform
+    rightRotTot         = 0;            //Keep track of every time a right rotation is perform
     //Destructor for RBT class, for garbage collection (GC) purposes
     if (root != nullptr)        //If the tree is not empty
     {
@@ -81,31 +91,31 @@ void RBT::Insert(char *word)
      *  2. Node does not exist in the tree, insert the node in the tree
      *  */
 
-    if (root == nullptr)   //If the tree is empty, we insert node as root
+    if (root == nullptr)                            //If the tree is empty, we insert node as root
     {
-        root = new Node(word);      //Create a new node with given char array and set it as root of the tree
-        root->color = black;        //The root always has to be black
+        root = new Node(word);                      //Create a new node with given char array and set it as root of the tree
+        root->color = black;                        //The root always has to be black
     }   //End of if the tree is empty
     else                //Else the tree is not empty
     {
-        Node* findNode = search(word);          //Call and save the result of the search method
-        if (strcmp(findNode->data, word) == 0)  //If the findNode contains the word we are looking for, update count
+        Node* findNode = search(word);              //Call and save the result of the search method
+        if (strcmp(findNode->data, word) == 0)      //If the findNode contains the word we are looking for, update count
         {
-            findNode->count++;  //Update the count by adding 1
+            findNode->count++;                      //Update the count by adding 1
             totKeyComparison++; //Add +1 to the total key comparisons for comparing the values in both arrays
         }   //End of if the findNode contains the word
-        else                            //Else the findNode is the parentNode we have to insert new child
+        else                                        //Else the findNode is the parentNode we have to insert new child
         {
             Node* parentNode = findNode;            //Save the findNode as parentNode
             Node* insertNode = new Node(word);      //Create a new node to insert as a child, with color red
             totKeyComparison++;                     //Add +1 to tot comparison for the following array comparison
             if (strcmp(parentNode->data, word) > 0) //If the parentNode's data is greater than than the word
             {
-                parentNode->LCH = insertNode; //Insert the new node as left child
+                parentNode->LCH = insertNode;       //Insert the new node as left child
             }   //End of if the word being inserted is less than the parentNode, insert left
-            else                        //Else the word is greater than parentNode's data, insert right
+            else                                    //Else the word is greater than parentNode's data, insert right
             {
-                parentNode->RCH = insertNode;//Insert new node as right child;
+                parentNode->RCH = insertNode;       //Insert new node as right child;
             }   //Else if the word is greater than parentNode, insert right
             insertNode->parent = parentNode;        //Set the parentNode as insertNode's parent
             InsertFixUp(insertNode);
@@ -132,19 +142,21 @@ void RBT::InsertFixUp(RBT::Node *z)
                 y->color = black;                   //Set y to black
                 z->parent->parent->color = red;     //Set z's grandparent to red
                 z = z->parent->parent;              //Move z pointer up to its grandparent
+                recolorTot += 3;                    //Add +3 to recoloring for this case
             }   //End of Case 1
             else
             {
                 //Case 2
-                if (z == z->parent->RCH)           //Z is a RCH to its parent
+                if (z == z->parent->RCH)            //Z is a RCH to its parent
                 {
-                    z = z->parent;                 //Move z to its parent node
-                    LeftRotate(z);                 //Perform a right-rotation
+                    z = z->parent;                  //Move z to its parent node
+                    LeftRotate(z);                  //Perform a right-rotation
                 }   //End of case 2
                 //Case 3
-                z->parent->color = black;
-                z->parent->parent->color = red;
-                RightRotate(z->parent->parent);
+                z->parent->color = black;           //Change z's parent color to black
+                z->parent->parent->color = red;     //Change z's grandparent color to red
+                RightRotate(z->parent->parent);     //Perform a Right-Rotation
+                recolorTot += 2;                    //Add +2 to recoloring for case 3
             }   //End of else-if z is a RCH to its parent
         }   //End of if z's parent
         else    //Else the z's parent is a RCH of its grandparent
@@ -156,6 +168,7 @@ void RBT::InsertFixUp(RBT::Node *z)
                 y->color = black;                   //Set y to black
                 z->parent->parent->color = red;     //Set z's grandparent to red
                 z = z->parent->parent;              //Move z pointer up to its grandparent
+                recolorTot += 2;                    //Add +2 to recoloring for case 1
             }   //End of case 1
             else
             {
@@ -163,16 +176,18 @@ void RBT::InsertFixUp(RBT::Node *z)
                 if (z == z->parent->LCH)            //Z is a LCH to its parent
                 {
                     z = z->parent;                  //Move z to its parent node
-                    RightRotate(z);                  ///Might want to change to RightRotation
+                    RightRotate(z);                 //Perform a Right-Rotation
                 }   //End of case 2, if z is a LCH to its parent
                 //Case 3
-                z->parent->color = black;
-                z->parent->parent->color = red;
-                LeftRotate(z->parent->parent);
+                z->parent->color = black;           //Change z's parent color to black
+                z->parent->parent->color = red;     //Change z's grandparent color to red
+                LeftRotate(z->parent->parent);      //Perform a Left-Rotation
+                recolorTot += 2;                    //Add +2 to recoloring for case 3
             }   //End of else, if Case 2 & 3
         }   //End of else, z's parent is a RCH of its grandparent
     }   //End of while-loop
-   root->color = black;
+    root->color = black;                            //Make sure the root is black
+    recolorTot++;                                   //Add +1 for recoloring the root node
 }   //End of InsertFixUp method
 
 void RBT::LeftRotate(RBT::Node *X)
@@ -196,6 +211,7 @@ void RBT::LeftRotate(RBT::Node *X)
     else X->parent->RCH = Y;            //gets taken by Y
     Y->LCH = X;                         //Put X on Y's left, which...
     X->parent = Y;                      //....makes X's parent be Y
+    leftRotTot++;                      //Update total left rotations performed
 }   //End of LeftRotate method
 
 void RBT::RightRotate(RBT::Node *X)
@@ -227,14 +243,38 @@ void RBT::RightRotate(RBT::Node *X)
     Y->RCH = X;
     X->parent = Y;
 
+    rightRotTot++;                      //Update total right rotations performed
+
 }   //End of RightRotate method
 
-void RBT::print()
+void RBT::printMetrics()
 {
-    if (root == nullptr)    //If the tree is empty
-        std::cout << "Tree is empty" << std::endl;
-    else                    //Else the tree is not empty
-        inOrderTraversal(root); //Traverse the tree in-order traversal
+
+    /* printMetrics public method, parameter(s): None
+     * Objective: Print the final results of the tree
+     * Metrics:
+     *  - Distinct Words
+     *  - Total Words
+     *  - Height
+     *  - Reference Changes
+     *  - Key Comparisons
+     *  - Left-Rotations
+     *  - Right-Rotations
+     *  - Elapsed Time
+     *  */
+
+    int height = calcHeight(root);  //Recurse the tree to get the height of it
+    inOrderTraversal(root);         //This helps to calculate total words and distinct words
+    std::cout << "Distinct Words: "     << distinctWords    << std::endl;   //Distinct Words
+    std::cout << "Total Words: "        << totWords         << std::endl;   //Total words
+    std::cout << "Height: "             << height           << std::endl;   //Height of the tree
+    std::cout << "Key Comparisons: "    << totKeyComparison << std::endl;   //Total key comparisons done
+
+    std::cout << "Reference Changes: "  << std::endl;
+
+    std::cout << "Recoloring: "         << recolorTot       << std::endl;   //Total recoloring done
+
+
 }   //End of print method
 
 void RBT::inOrderTraversal(RBT::Node *node)
@@ -244,9 +284,26 @@ void RBT::inOrderTraversal(RBT::Node *node)
      * It is called by the printTree() public method
      */
 
-    if (node == nullptr)    //If we reach a leaf
-        return;                 //Exit
-    inOrderTraversal(node->LCH);   //Traverse through the left side
-    std::cout << node->data << ": " << node->count << std::endl;
-    inOrderTraversal(node->RCH);  //Traverse through the right side
+    if (node == nullptr)            //If we reach a leaf
+        return;                     //Exit
+    inOrderTraversal(node->LCH);    //Traverse through the left side
+    totWords += node->count;        //Add the count of the node to totWords variable
+    distinctWords++;                //Increase distinctWords for every node in the tree
+    inOrderTraversal(node->RCH);    //Traverse through the right side
 }   //End of inOrderTraversal method
+
+
+int RBT::calcHeight(RBT::Node *node)
+{
+    /* calcHeight private recursive method, parameter(s): Node pointer
+     * Objective: Recurse through the tree to calculate the height of the tree
+     * */
+
+    if (node == nullptr)   return 0;        //If we hit a leaf exit
+
+    int leftH   = calcHeight(node->LCH);    //Recurse and calculate the left height of the tree
+    int rightH  = calcHeight(node->RCH);    //Recurse and calculate the right side of the tree
+
+    if (leftH > rightH) return leftH + 1;   //Add to the left height
+    else                return rightH + 1;  //Add to the right height
+}   //End of calcHeight

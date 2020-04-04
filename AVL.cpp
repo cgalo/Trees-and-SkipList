@@ -327,6 +327,7 @@ void AVL::Insert(char *X)
 
 void AVL::printMetrics()
 {
+
     /* printMetrics public method, parameter(s): None
      * Objective: Print the final results of the tree
      * Metrics:

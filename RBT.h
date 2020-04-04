@@ -9,7 +9,7 @@
 
 class RBT {
 private:
-    enum Color { black, red };      //For the two colors that a Node can have in an RBTree
+    enum Color { black, red };              //For the two colors that a Node can have in a RBTree
     struct Node
     {
         char data [50] = {};                //Initialize empty char array as data
@@ -34,13 +34,19 @@ private:
     };  //End of struct Node
 
     Node* root;                             //Top of the tree
-    int totKeyComparison;                   //Keep track of all key comparisons completed throughout
+    int totKeyComparison;                   //Keep track of the total key comparisons done in the search method
+    int totWords;                           //Total nodes and count data in the tree
+    int distinctWords;                      //Total of unique/distinct tree
+    int recolorTot;                         //Keep track of every time we recolor a node
+    int leftRotTot;                         //Keep track of every time a left rotation is perform
+    int rightRotTot;                        //Keep track of every time a right rotation is perform
 
     Node* search    (char word[]);          //Traverse the tree to find a node with the given <word>/data
     void InsertFixUp(Node* z);              //Helper method to maintain RBT rules after inserting a new node in the tree
     void LeftRotate (Node* X);              //Perform a left-rotation (LR) in the tree
     void RightRotate(Node* pt);             //Perform a right-rotate (RR) in the tree
     void inOrderTraversal(Node* node);      //Traverse the tree in order
+    int calcHeight(Node* node);             //Recurse the tree and return the current height of the tree
     ////The following method should never be called besides by the destructor -> ~BST()
     void treeDestructor (Node* currentNode);    //Traverses the tree to destroy every node in the tree
 
@@ -49,7 +55,7 @@ public:
     ~RBT();             //Destructor for the RBT class
 
     void Insert (char word[]);  //Basic insert function, either inserts or updates count of a node
-    void print();
+    void printMetrics();
 
 };
 
