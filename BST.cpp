@@ -7,27 +7,26 @@
 BST::BST()
 {
     /* BST public constructor, parameter(s): none
-     * Objective: Initialize the tree object by setting the root to null and count to 0
      * */
-    root = nullptr;             //Set the root of the tree to initialize as NULL
-    totKeyComparison = 0;       //Set the total key comparison of the tree to 0
-    totItems = 0;               //Set the total number of items in the tree to 0
-    distinctItems = 0;          //Set the total distinct nodes in the tree to 0
+
+    this->root              = nullptr;  //Set the root of the tree to initialize as NULL
+    this->totKeyComparison  = 0;        //Set the total key comparison of the tree to 0
+    this->totWords          = 0;        //Set the total number of items in the tree to 0
+    this->distinctWords     = 0;        //Set the total distinct nodes in the tree to 0
 }   //End of constructor
 
 BST::~BST()
 {
     /* ~BST public destructor, parameter(s): None
-     * Objective: delete all nodes in the tree
      * */
 
-    totKeyComparison = 0;       //Set the total key comparison of the tree to 0
-    totItems = 0;               //Set the total number of items in the tree to 0
-    distinctItems = 0;          //Set the total distinct nodes in the tree to 0
+    totKeyComparison    = 0;       //Set the total key comparison of the tree to 0
+    totWords            = 0;       //Set the total number of items in the tree to 0
+    distinctWords       = 0;       //Set the total distinct nodes in the tree to 0
     if (root != nullptr)        //If the tree is not empty
     {
         treeDestructor(root);   //Traverse and destroy
-        root = nullptr;         //Set the root pointer to NULL
+        this->root = nullptr;   //Set the root pointer to NULL
     }   //End of if tree is not empty
 }   //End of destructor function
 
@@ -56,25 +55,21 @@ BST::Node* BST::search(char *word)
      *  2. Word was not found in tree, return what would be the parent node of the word
      *  */
 
-    Node* currentNode = root;       //Start from the root of the tree and we work ourselves down
-    Node* parentNode  = nullptr;    //This will be returned if we do not search the word in the tree
-    while (currentNode != nullptr)  //Traverse until we hit a leaf in the tree
+    Node* currentNode = root;                           //Start from the root of the tree and we work ourselves down
+    Node* parentNode  = nullptr;                        //This will be returned if we do not search the word in the tree
+    while (currentNode != nullptr)                      //Traverse until we hit a leaf in the tree
     {
-        if (strcmp(currentNode->data, word) == 0)
+        totKeyComparison++;                             //Add +1 to total key comparisons completed
+        if (strcmp(currentNode->data, word) == 0)       //If the current node has the word we are looking for
+            return currentNode;                         //Return the node that contains the word we are looking for
+        else                                            //Else the node does not contain the word
         {
-            totKeyComparison++; //Add +1 to the total key comparisons for comparing the values in both arrays
-            return currentNode; //Return the node that contains the word we are looking for
-        }   //End of if the current Node contains the word we are looking for
-        else    //Else the node does not contain the word, we traverse either left or right
-        {
-            parentNode = currentNode;   //Save the parentNode before moving the currentNode reference
-            totKeyComparison++;         //Update the total of key comparison done
+            parentNode = currentNode;                   //Save the parentNode before moving the currentNode reference
+            totKeyComparison++;                         //Update the total of key comparison done
             if (strcmp(currentNode->data, word) > 0)    //If the word is lesser than the currentNode's data
                 currentNode = currentNode->leftChild;   //We move to the left child
             else                                        //Else the word is greater than the currentNode's data
-            {
                 currentNode = currentNode->rightChild;  //We move to the right child
-            }   //End of else, if the word is greater than the currentNode's data
         }   //End of else, if the word was not in the currentNode
     }   //End of while-loop, we finished traversing the tree
     //We get here if we did not search the Node containing the word, we return the parentNode
@@ -90,60 +85,41 @@ void BST::Insert(char *word)
      *  2. Node does not exist in the tree, insert the node in the tree
      *  */
 
-    if (root == nullptr)   //If the tree is empty, we insert node as root
-    {
-        root = new Node(word);
-    }   //End of if the tree is empty
+    if (root == nullptr)                            //If the tree is empty, we insert node as root
+        root = new Node(word);                      //Insert a new node, w/ the given word as data, as the new root
     else                //Else the tree is not empty
     {
-        Node* findNode = search(word);          //Call and save the result of the search method
-        if (strcmp(findNode->data, word) == 0)  //If the findNode contains the word we are looking for, update count
-        {
-            totKeyComparison++; //Add +1 to the total key comparisons for comparing the values in both arrays
-            findNode->count++;  //Update the count by adding 1
-        }   //End of if the findNode contains the word
-        else                            //Else the findNode is the parentNode we have to insert new child
+        Node* findNode = search(word);              //Call and save the result of the search method
+        totKeyComparison++;                         //Increase total key comparison variable
+        if (strcmp(findNode->data, word) == 0)      //If the findNode contains the word we are looking for, update count
+            findNode->count++;                      //Update the count by adding 1
+        else                                        //Else the findNode is the parentNode we have to insert new child
         {
             Node* parentNode = findNode;            //Save the findNode as parentNode
             Node* insertNode = new Node(word);      //Create a new node to insert as a child
             totKeyComparison++;                     //Add +1 to tot comparison for the following array comparison
             if (strcmp(parentNode->data, word) > 0) //If the parentNode's data is greater than than the word
-            {
                 parentNode->leftChild = insertNode; //Insert the new node as left child
-            }   //End of if the word being inserted is less than the parentNode, insert left
-            else                        //Else the word is greater than parentNode's data, insert right
-            {
+            else                                    //Else the word is greater than parentNode's data, insert right
                 parentNode->rightChild = insertNode;//Insert new node as right child;
-            }   //Else if the word is greater than parentNode, insert right
         }   //End of else, if the findNode is the parentNode
     }   //End of else, if the the tree is not empty
 }   //End of Insert method
 
-void BST::TreeHeight()
-{
-    if (root == nullptr)
-        std::cout << "Height: " << 0 << std::endl;
-    else
-        std::cout << "Height: " << height(root) << std::endl;
-
-}
-
-int BST::height(BST::Node *node)
+int BST::calcHeight(BST::Node *node)
 {
     /* Height private recursive method, parameter(s): Node pointer
      * Objective: Recurse through the tree to calculate the height of it
      * */
 
-    if (node == nullptr)   return 0;           //If we hit a leaf exit
+    if (node == nullptr)   return 0;                //If we hit a leaf exit
 
-    int leftH = height(node->leftChild);    //Recurse and calculate the left height of the tree
-    int rightH = height(node->rightChild);  //Recurse and calculate the right side of the tree
+    int leftH = calcHeight(node->leftChild);        //Recurse and calculate the left height of the tree
+    int rightH = calcHeight(node->rightChild);      //Recurse and calculate the right side of the tree
 
-    if (leftH > rightH) return leftH + 1;   //Add to the left height
-    else                return rightH + 1;  //Add to the right height
+    if (leftH > rightH) return leftH + 1;           //Add to the left height
+    else                return rightH + 1;          //Add to the right height
 }   //End of height method
-
-
 
 void BST::inOrderPrint(BST::Node *currentNode)
 {
@@ -152,24 +128,12 @@ void BST::inOrderPrint(BST::Node *currentNode)
      * It is called by the printTree() public method
      */
 
-    if (currentNode == nullptr)    //If we reach a leaf
-        return;                 //Exit
-    inOrderPrint(currentNode->leftChild);   //Traverse through the left side
-    totItems += currentNode->count;
-    distinctItems++;
-    inOrderPrint(currentNode->rightChild);  //Traverse through the right side
-}
-void BST::print()
-{
-    if (root == nullptr)
-        std::cout << "Tree empty" << std::endl;
-    else
-        inOrderPrint(root);
-}
-
-void BST::getDistinctItems()
-{
-
+    if (currentNode == nullptr)                 //If we reach a leaf
+        return;                                 //Exit
+    inOrderPrint(currentNode->leftChild);       //Traverse through the left side
+    totWords += currentNode->count;             //Add the count of the node to totItems
+    distinctWords++;                            //Add +1 to total nodes in the tree
+    inOrderPrint(currentNode->rightChild);      //Traverse through the right side
 }
 
 
