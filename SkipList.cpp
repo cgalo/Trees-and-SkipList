@@ -4,10 +4,11 @@
 
 
 #include "SkipList.h"       //Connect to the header file of the SkipList(SL)
-#include <time.h>           //For srand(time())
+
 
 #define NEG_INF "negInf"    //Used to create negative sentinels as node
 #define POS_INF "posInf"    //Used to create positive sentinels as node
+
 
 SkipList::SkipList()
 {
@@ -24,12 +25,13 @@ SkipList::SkipList()
     this->totKeyComparison  = 0;                    //Total key-comparisons done
     this->distinctWords     = 0;                    //Total nodes in the slow-lane
     this->totWords          = 0;                    //Total of the all the node's frequencies in the SL slow lane
+    this->refChanges        = 0;                    //Total reference changes
 
     //For randomizing when to move to an upper lane
-    srand(time(nullptr));                           //Makes sure to keep random numbers randomized
+    this->coin              = std::mt19937(time(NULL)); //Seed PRNG
 }   //End of constructor
 
-////Still need to finish the destructor
+
 SkipList::~SkipList()
 {
     //Destructor for the SL object, for garbage collection (GC)
@@ -53,6 +55,7 @@ SkipList::~SkipList()
     this->totKeyComparison  = 0;                //Reset total key-comparisons done
     this->distinctWords     = 0;                //Reset total nodes in the slow-lane
     this->totWords          = 0;                //Reset total of the all the node's frequencies in the SL slow lane
+    this->refChanges        = 0;                //Reset total reference changes
 }   //End of destructor
 
 
@@ -128,10 +131,11 @@ void SkipList::Insert(char *word)
         insertNode->right       = findNode->right;  //Set the insertNode's right to the findNode's right
         findNode->right->left   = insertNode;
         findNode->right         = insertNode;       //Set the findNode's to the insertNode
+        refChanges++;
 
         //Now we have to randomize if we are going to insert this new node <insertNode> into another lane/level
         int currentLvl = 1;                         //Track the current level, start from the slow-lane
-        while (rand() & 1)                          //While we keep getting a coin flipped as heads
+        while (coin() & 1)                          //While we keep getting a coin flipped as heads
         {
             //We are here if we randomly number that counts as 'head' in a coin, so insert the node in an upper level
             if (currentLvl >= height)               //If we reached the top level of the SkipList
@@ -193,10 +197,12 @@ void SkipList::displayStatistics()
      *  - Key Comparisons
      *  - Reference Changes
      *  - Total Nodes in each lane
+     *  - Elapsed Time
      *  */
 
 
     //Display results
+    std::cout << "\nSkipList Results"   << std::endl;
     std::cout << "Slow Lane nodes: "    << distinctWords    << std::endl;   //Total nodes in the slow-lane
     std::cout << "Fast Lane nodes: "    << nodesInLane(head)<< std::endl;   //Total nodes in the fast lane
     std::cout << "Internal Height: "    << height           << std::endl;   //Internal height
@@ -204,7 +210,7 @@ void SkipList::displayStatistics()
     std::cout << "Distinct Words: "     << distinctWords    << std::endl;   //Distinct Words
     std::cout << "Total Words: "        << totWords         << std::endl;   //Total words
     std::cout << "Key Comparisons: "    << totKeyComparison << std::endl;   //Total key comparisons done
-    std::cout << "Reference Changes: "  << std::endl;
+    std::cout << "Reference Changes: "  << refChanges       << std::endl;
     std::cout << "Elapsed Time: "       << std::endl;
     printLanes();                                                           //Print lane & nodes per lane
 }   //End of print method

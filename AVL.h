@@ -33,15 +33,16 @@ private:
     };  //End of struct Node
 
     Node* root;                             //The top of the tree
-    int totKeyComparison;                   //Keep track of the total key comparisons done in the search method
-    int totWords;                           //Total nodes and count data in the tree
-    int distinctWords;                      //Total of unique/distinct tree
-    int totBFChanges;                       //Total BF changes done through the Insert() method
-    int LLTot;                              //Total Left-Left Rotations done in the Insert() method
-    int LRTot;                              //Total Left-Right Rotations done in the Insert() method
-    int RRTot;                              //Total Right-Right Rotations done in the Insert() method
-    int RLTot;                              //Total Right-Left Rotations done in the Insert() method
-    int NoRotTot;                           //Total of times Insert() method was called but no rotation was needed
+    long totKeyComparison;                  //Keep track of the total key comparisons done in the search method
+    long totWords;                          //Total nodes and count data in the tree
+    long distinctWords;                     //Total of unique/distinct tree
+    long refChanges;                        //Total reference changes
+    long totBFChanges;                      //Total BF changes done through the Insert() method
+    long LLTot;                             //Total Left-Left Rotations done in the Insert() method
+    long LRTot;                             //Total Left-Right Rotations done in the Insert() method
+    long RRTot;                             //Total Right-Right Rotations done in the Insert() method
+    long RLTot;                             //Total Right-Left Rotations done in the Insert() method
+    long NoRotTot;                          //Total of times Insert() method was called but no rotation was needed
 
     void inOrderTraversal   (Node* node);   //Do an in order traversal to get information from the tree
     int calcHeight          (Node* node);   //Recurse through the tree, returns the height of the tree

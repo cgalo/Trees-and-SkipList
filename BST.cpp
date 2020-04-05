@@ -13,6 +13,7 @@ BST::BST()
     this->totKeyComparison  = 0;        //Set the total key comparison of the tree to 0
     this->totWords          = 0;        //Set the total number of items in the tree to 0
     this->distinctWords     = 0;        //Set the total distinct nodes in the tree to 0
+    this->refChanges        = 0;        //Total reference changes
 }   //End of constructor
 
 BST::~BST()
@@ -20,13 +21,14 @@ BST::~BST()
     /* ~BST public destructor, parameter(s): None
      * */
 
-    totKeyComparison    = 0;       //Set the total key comparison of the tree to 0
-    totWords            = 0;       //Set the total number of items in the tree to 0
-    distinctWords       = 0;       //Set the total distinct nodes in the tree to 0
-    if (root != nullptr)        //If the tree is not empty
+    this->totKeyComparison  = 0;        //Set the total key comparison of the tree to 0
+    this->totWords          = 0;        //Set the total number of items in the tree to 0
+    this->distinctWords     = 0;        //Set the total distinct nodes in the tree to 0
+    this->refChanges        = 0;        //Total reference changes
+    if (root != nullptr)                //If the tree is not empty
     {
-        treeDestructor(root);   //Traverse and destroy
-        this->root = nullptr;   //Set the root pointer to NULL
+        treeDestructor(root);           //Traverse and destroy
+        this->root = nullptr;           //Set the root pointer to NULL
     }   //End of if tree is not empty
 }   //End of destructor function
 
@@ -59,17 +61,15 @@ BST::Node* BST::search(char *word)
     Node* parentNode  = nullptr;                        //This will be returned if we do not search the word in the tree
     while (currentNode != nullptr)                      //Traverse until we hit a leaf in the tree
     {
+        int compareValue = strcmp(currentNode->data, word); //Save comparison result
         totKeyComparison++;                             //Add +1 to total key comparisons completed
-        if (strcmp(currentNode->data, word) == 0)       //If the current node has the word we are looking for
+        if (compareValue == 0)                          //If the current node has the word we are looking for
             return currentNode;                         //Return the node that contains the word we are looking for
         else                                            //Else the node does not contain the word
         {
             parentNode = currentNode;                   //Save the parentNode before moving the currentNode reference
-            totKeyComparison++;                         //Update the total of key comparison done
-            if (strcmp(currentNode->data, word) > 0)    //If the word is lesser than the currentNode's data
-                currentNode = currentNode->leftChild;   //We move to the left child
-            else                                        //Else the word is greater than the currentNode's data
-                currentNode = currentNode->rightChild;  //We move to the right child
+            //Here we decide if we traverse either left or right
+            currentNode = (compareValue > 0) ? currentNode->leftChild : currentNode->rightChild;
         }   //End of else, if the word was not in the currentNode
     }   //End of while-loop, we finished traversing the tree
     //We get here if we did not search the Node containing the word, we return the parentNode
@@ -86,22 +86,34 @@ void BST::Insert(char *word)
      *  */
 
     if (root == nullptr)                            //If the tree is empty, we insert node as root
+    {
         root = new Node(word);                      //Insert a new node, w/ the given word as data, as the new root
+        totWords++;                                 //Increase the total words in the tree
+        distinctWords++;                            //Increase total nodes in the tree
+    }   //End of if the root is nil
+
     else                //Else the tree is not empty
     {
         Node* findNode = search(word);              //Call and save the result of the search method
+        int compareValue = strcmp(findNode->data, word);    //Save the compare value
         totKeyComparison++;                         //Increase total key comparison variable
-        if (strcmp(findNode->data, word) == 0)      //If the findNode contains the word we are looking for, update count
+        if (compareValue == 0)                      //If the findNode contains the word we are looking for, update count
+        {
             findNode->count++;                      //Update the count by adding 1
+            totWords++;                             //Increase total words
+        }   //End of if the tree already has a node w/ the given word
+
         else                                        //Else the findNode is the parentNode we have to insert new child
         {
             Node* parentNode = findNode;            //Save the findNode as parentNode
             Node* insertNode = new Node(word);      //Create a new node to insert as a child
-            totKeyComparison++;                     //Add +1 to tot comparison for the following array comparison
-            if (strcmp(parentNode->data, word) > 0) //If the parentNode's data is greater than than the word
+            if (compareValue > 0)                   //If the parentNode's data is greater than than the word
                 parentNode->leftChild = insertNode; //Insert the new node as left child
             else                                    //Else the word is greater than parentNode's data, insert right
                 parentNode->rightChild = insertNode;//Insert new node as right child;
+            totWords++;                             //Increase total words
+            distinctWords++;                        //Increase total nodes in the tree
+            refChanges++;                           //Increase reference changes
         }   //End of else, if the findNode is the parentNode
     }   //End of else, if the the tree is not empty
 }   //End of Insert method
@@ -130,10 +142,10 @@ void BST::inOrderTraversal(BST::Node *currentNode)
 
     if (currentNode == nullptr)                 //If we reach a leaf
         return;                                 //Exit
-    inOrderTraversal(currentNode->leftChild);       //Traverse through the left side
+    inOrderTraversal(currentNode->leftChild);   //Traverse through the left side
     totWords += currentNode->count;             //Add the count of the node to totItems
     distinctWords++;                            //Add +1 to total nodes in the tree
-    inOrderTraversal(currentNode->rightChild);      //Traverse through the right side
+    inOrderTraversal(currentNode->rightChild);  //Traverse through the right side
 }   //End of inOrderPrint method
 
 
@@ -152,13 +164,14 @@ void BST::displayStatistics()
      *  */
 
     int height = calcHeight(root);  //Recurse the tree to get the height of it
-    inOrderTraversal(root);         //This helps to calculate total words and distinct words
+    //inOrderTraversal(root);         //This helps to calculate total words and distinct words
 
     //Display results
+    std::cout << "\nBinary Search Tree Results" << std::endl;
     std::cout << "Distinct Words: "     << distinctWords    << std::endl;   //Distinct Words
     std::cout << "Total Words: "        << totWords         << std::endl;   //Total words
     std::cout << "Height: "             << height           << std::endl;   //Height of the tree
     std::cout << "Key Comparisons: "    << totKeyComparison << std::endl;   //Total key comparisons done
-    std::cout << "Reference Changes: "  << std::endl;
+    std::cout << "Reference Changes: "  << refChanges       << std::endl;   //Total reference changes done
     std::cout << "Elapsed Time: "       << std::endl;   //Elapsed Time
 }   //End of print method

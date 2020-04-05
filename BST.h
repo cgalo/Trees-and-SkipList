@@ -33,6 +33,7 @@ private:
     long totKeyComparison;                          //Keep track of the total key comparisons done in the search method
     long totWords;                                  //Total addition of all the counts' of the nodes in the tree
     long distinctWords;                             //Total of nodes in the tree
+    long refChanges;                                //Total reference changes
 
     Node* search(char word[]);                      //Looks for node w/ word in the tree, returns node or parent node
     void inOrderTraversal(Node* currentNode);           //Recurse, in order, the tree to calculate totWords & distinctWords

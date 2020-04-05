@@ -6,6 +6,7 @@
 #define TREES___SKIPLIST_SKIPLIST_H
 
 #include <iostream>
+#include <random>           //To randomize the coin flip
 
 class SkipList {
 private:
@@ -36,6 +37,8 @@ private:
     int totKeyComparison;           //Keep track of every time a key-comparison occurs
     int distinctWords;              //Total nodes in the slow-lane
     int totWords;                   //Total of the all the node's frequencies in the slow lane of the SL
+    long refChanges;                //Total reference changes
+    std::mt19937 coin;              //For random coin flip
 
     //Methods needed for SL
     Node* find(char word[]);        //Search of node in the SL, return the node with the given parameter in the SkipList

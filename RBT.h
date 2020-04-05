@@ -37,6 +37,7 @@ private:
     long totKeyComparison;                  //Keep track of the total key comparisons done in the search method
     long totWords;                          //Total nodes and count data in the tree
     long distinctWords;                     //Total of unique/distinct tree
+    long refChanges;                        //Total reference changes
     long recolorTot;                        //Keep track of every time we recolor a node
     long leftRotTot;                        //Keep track of every time a left rotation is perform
     long rightRotTot;                       //Keep track of every time a right rotation is perform

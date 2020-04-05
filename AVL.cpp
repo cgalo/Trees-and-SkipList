@@ -19,6 +19,7 @@ AVL::AVL()
     RRTot               = 0;            //Total Right-Right Rotations done in the Insert() method
     RLTot               = 0;            //Total Right-Left Rotations done in the Insert() method
     NoRotTot            = 0;            //Total of times Insert() method was called but no rotation was needed
+    refChanges          = 0;            //Total reference changes
 }   //End of constructor
 
 AVL::~AVL()
@@ -34,10 +35,11 @@ AVL::~AVL()
     RRTot               = 0;            //Total Right-Right Rotations done in the Insert() method
     RLTot               = 0;            //Total Right-Left Rotations done in the Insert() method
     NoRotTot            = 0;            //Total of times Insert() method was called but no rotation was needed
+    refChanges          = 0;            //Total reference changes
     if (root != nullptr)                //If the tree is not empty
     {
         treeDestructor(root);           //Destroy all nodes in the tree
-        root                = nullptr;  //Set the root to nil
+        root            = nullptr;      //Set the root to nil
     }   //End of if the tree is not empty
 }   //End of destructor
 
@@ -66,9 +68,11 @@ void AVL::Insert(char *X)
 
     if (root == nullptr)   // Empty tree? Make a root node and exit!
     {
-        NoRotTot++;         //No rotation was required
-        root = new Node(X);    // make and fill a node
-        return;          // This was the trivial case
+        root = new Node(X);     // make and fill a node
+        NoRotTot++;             //No rotation was required
+        totWords++;             //Total words increase
+        distinctWords++;        //Total of nodes increase
+        return;                 // This was the trivial case
     }
 
     /* Locate insertion point for X.
@@ -84,26 +88,31 @@ void AVL::Insert(char *X)
 
     while (P != nullptr) // search tree for insertion point
     {
-        totKeyComparison++; //Increase key comparison for report
-        if (strcmp(X, P->data) == 0)
+        int compareVal = (strcmp(X, P->data));  //Do comparison and save value
+        totKeyComparison++;                     //Increase total key comparisons done
+        if (compareVal == 0)
         {
             NoRotTot++; //No rotation was required
+            totWords++; //Update the count of words
             P->count++; //Increase the count/frequency of the node
             return;     // ALREADY HERE!
         }
         if (P->BF !=0)   // remember the last place we saw
         {A=P; F=Q;}  // a non-zero BF (and its parent)
         Q = P;                               // Bring Q up to where P is
-        P = (strcmp(X, P->data) < 0) ? P->LCH : P->RCH; // and then advance P
-        totKeyComparison++; //Increase key comparison for report
+        P = (compareVal < 0) ? P->LCH : P->RCH; // and then advance P
     }
     /* At this point, P is NULL, but Q points at the last node where X
      * belongs (either as Q’s LCH or RCH, and Q points at an existing leaf)
      * */
 
-    Y = new Node(X);   // Make a new node with it's data equal to the X parameter
+    Y = new Node(X);    // Make a new node with it's data equal to the X parameter
 
+    distinctWords++;    //Increase for a new node/distinct word
+    totWords++;         //Increase total words
     totKeyComparison++; //Increase key comparison for report
+    refChanges++;
+
     if (strcmp(X, Q->data) < 0) Q->LCH = Y; // Will Y be Q's new left or right child?
     else           Q->RCH = Y;
 
@@ -121,6 +130,7 @@ void AVL::Insert(char *X)
       * */
 
     totKeyComparison++; //Increase key comparison for report
+    refChanges++;
     if (strcmp(X, A->data) > 0)
     {   // Which way is the displacement (d)
         B=P=A->RCH;
@@ -135,6 +145,7 @@ void AVL::Insert(char *X)
     while (P != Y)  // P is now one node below A.  Adjust from here to the
     {               // insertion point.  Don’t do anything to new node (Y)
         totKeyComparison++; //Increase key comparison for report
+        refChanges++;
         if (strcmp(X, P->data) > 0)
         {
             P->BF =-1;
@@ -174,9 +185,9 @@ void AVL::Insert(char *X)
       * rotation type do we need to apply?
       * */
 
-    if (d==1)  // this is a left imbalance (left subtree too tall).
+    if (d ==+1)  // this is a left imbalance (left subtree too tall).
     {           // Is it LL or LR?
-        if (B->BF==1) // LL rotation
+        if (B->BF==+1) // LL rotation
         {
             /* Change the child pointers at A and B to reflect the rotation
              * Adjust the BFs at A & B
@@ -197,48 +208,54 @@ void AVL::Insert(char *X)
 
             LRTot++;    //Increase count of rotations
             C  = B->RCH; // C is B's right child
-            CL = C->LCH; // CL and CR are C's left and right children
-            CR = C->RCH; // See Schematic (2) and (3)
-            switch (C->BF)
+            if (C != nullptr)
             {
-                /* Set the new BF’s at A and B, based on the BF at C.
-                 * Note: There are 3 sub-cases
-                 * */
+                CL = C->LCH; // CL and CR are C's left and right children
+                CR = C->RCH; // See Schematic (2) and (3)
+                switch (C->BF)
+                {
+                    /* Set the new BF’s at A and B, based on the BF at C.
+                     * Note: There are 3 sub-cases
+                     * */
 
-                //Case A
-                case 0:
-                    C->LCH   = B;    //Make C's RCH node B
-                    C->RCH   = A;    //Make C's LCH node A
-                    A->BF    = 0;    //Set A's BF to 0
-                    B->BF    = 0;    //Set B's BF to 0
-                    totBFChanges += 2; //Increase for three BF change
-                    break;              //End of case C's BF == 0
+                    //Case A
+                    case 0:
+                        C->LCH  = B;        //Make C's RCH node B
+                        C->RCH  = A;        //Make C's LCH node A
+                        A->LCH  = nullptr;  //Remove the LCH pointer of A
+                        B->RCH  = nullptr;  //Remove the RCH pointer of B
+                        A->BF    = 0;       //Set A's BF to 0
+                        B->BF    = 0;       //Set B's BF to 0
+                        totBFChanges += 2; //Increase for three BF change
+                        break;              //End of case C's BF == 0
 
-                //Case B
-                case +1:
-                    C->LCH  = B;    //Set C's LCH to B
-                    C->RCH  = A;    //Set C's RCH to A
-                    B->RCH  = CL;   //Set B's LCH to C's old LCH
-                    A->LCH  = CR;   //Set A's LCH to C's old RCH
-                    A->BF   = -1;   //Set A's BF to -1
-                    B->BF   = 0;    //Set B's BF to 0
-                    totBFChanges += 2; //Increase for two BF change
-                    break;              //End of case C's BF  == +1
+                        //Case B
+                    case +1:
+                        C->LCH  = B;    //Set C's LCH to B
+                        C->RCH  = A;    //Set C's RCH to A
+                        B->RCH  = CL;   //Set B's LCH to C's old LCH
+                        A->LCH  = CR;   //Set A's LCH to C's old RCH
+                        A->BF   = -1;   //Set A's BF to -1
+                        B->BF   = 0;    //Set B's BF to 0
+                        totBFChanges += 2; //Increase for two BF change
+                        break;              //End of case C's BF  == +1
 
-                case -1:
-                    C->LCH   = B;    //Set C's LCH to B
-                    C->RCH   = A;    //Set C's RCH to A
-                    B->RCH   = CL;   //Set B's LCH to C's old LCH
-                    A->LCH   = CR;   //Set A's LCH to C's old RCH
-                    A->BF    = 0;    //Set A's BF to 0
-                    B->BF    = 1;   //Set B's BF to +1
-                    totBFChanges += 2; //Increase for two BF change
-                    break;           //End of case C's BF  == -1
-            }   //End of switch & Left-Right Rotation
+                        //Case C
+                    case -1:
+                        C->LCH   = B;    //Set C's LCH to B
+                        C->RCH   = A;    //Set C's RCH to A
+                        B->RCH   = CL;   //Set B's LCH to C's old LCH
+                        A->LCH   = CR;   //Set A's LCH to C's old RCH
+                        A->BF    = 0;    //Set A's BF to 0
+                        B->BF    = 1;   //Set B's BF to +1
+                        totBFChanges += 2; //Increase for two BF change
+                        break;           //End of case C's BF  == -1
+                }   //End of switch & Left-Right Rotation
 
-            C->BF = 0; // Regardless, C is now balanced
-            B = C;     // B is the root of the now-rebalanced subtree (recycle)
-            totBFChanges++; //Increase for BF change
+                C->BF = 0; // Regardless, C is now balanced
+                B = C;     // B is the root of the now-rebalanced subtree (recycle)
+                totBFChanges++; //Increase for BF change
+            }
         } // end of else (LR Rotation)
     } // end of “if (d = +1)”
     else // d=-1.  This is a right imbalance
@@ -246,22 +263,23 @@ void AVL::Insert(char *X)
         //RR or RL Rotations occurs here
         if (B->BF == -1) //RR rotation
         {
-            RRTot++;    //Increase count of rotations
-            A->RCH      = B->LCH;   //Change A's RCH to B's LCH
-            B->LCH      = A;        //B's new LCH is A
-            A->BF    = 0;        //Set A's BF to 0
-            B->BF    = 0;        //Set B's BF to 0
-            totBFChanges += 2; //Increase for two BF change
+            RRTot++;            //Increase count of rotations
+            A->RCH  = B->LCH;   //Change A's RCH to B's LCH
+            B->LCH  = A;        //B's new LCH is A
+            A->BF   = 0;        //Set A's BF to 0
+            B->BF   = 0;        //Set B's BF to 0
+            totBFChanges += 2;  //Increase for two BF change
         }   //End of RR rotation
         else            //RL Rotation: three cases (structurally the same; BFs vary)
         {
             /* Adjust the child pointers of nodes A, B, & C to reflect
              * the new post-rotation structure
              * */
-            RLTot++;    //Increase count of this rotation
-            C  = B->LCH; // C is B's left child
-            CL = C->LCH; // CL and CR are C's left and right children
-            CR = C->RCH; // See Schematic (2) and (3)
+
+            RLTot++;        //Increase count of this rotation
+            C  = B->LCH;    // C is B's left child
+            CL = C->LCH;    // CL and CR are C's left and right children
+            CR = C->RCH;    // See Schematic (2) and (3)
             switch (C->BF)
             {
                 /* Set the new BF’s at A and B, based on the BF at C.
@@ -270,15 +288,17 @@ void AVL::Insert(char *X)
 
                 //Case A
                 case 0:
-                    C->LCH   = B;    //Make C's RCH node B
-                    C->RCH   = A;    //Make C's LCH node A
-                    A->BF    = 0;    //Set A's BF to 0
-                    B->BF    = 0;    //Set B's BF to 0
-                    totBFChanges += 2; //Increase for two BF change
-                    break;           //End of case C's BF == 0
+                    C->LCH  = A;        //Make C's RCH node A
+                    C->RCH  = B;        //Make C's LCH node B
+                    A->RCH  = nullptr;  //Reset A's RCH pointer
+                    B->LCH  = nullptr;  //Reset B's LCH pointer
+                    A->BF   = 0;        //Set A's BF to 0
+                    B->BF   = 0;        //Set B's BF to 0
+                    totBFChanges += 2;  //Increase for two BF change
+                    break;              //End of case C's BF == 0
 
                 //Case B
-                case 1:
+                case +1:
                     C->LCH  = A;   //Set C's LCH to B
                     C->RCH  = B;   //Set C's RCH to A
                     B->LCH  = CR;  //Set B's LCH to C's old LCH
@@ -286,7 +306,7 @@ void AVL::Insert(char *X)
                     A->BF   = 0;   //Set A's BF to 0
                     B->BF   = 1;   //Set B's BF to 1
                     totBFChanges += 2; //Increase for two BF change
-                    break;          //End of case C's BF  == 1
+                    break;          //End of case C's BF  == +1
 
                 //Case C
                 case -1:
@@ -347,25 +367,18 @@ void AVL::displayStatistics()
      *  - Elapsed Time
      *  */
 
-    int height = calcHeight(root);  //Recurse the tree to get the height of it
-    inOrderTraversal(root);         //This helps to calculate total words and distinct words
+    std::cout << "\nAVL Tree Results"   << std::endl;
     std::cout << "Distinct Words: "     << distinctWords    << std::endl;   //Distinct Words
     std::cout << "Total Words: "        << totWords         << std::endl;   //Total words
-    std::cout << "Height: "             << height           << std::endl;   //Height of the tree
-
-    std::cout << "Reference Changes: "  << std::endl;
-
+    std::cout << "Height: "             << calcHeight(root) << std::endl;   //Height of the tree
+    std::cout << "Reference Changes: "  << refChanges       << std::endl;   //Total reference changes
     std::cout << "BF Changes: "         << totBFChanges     << std::endl;   //Total changes in BF through the Insert()
-
-
-
     std::cout << "Key Comparisons: "    << totKeyComparison << std::endl;   //Total key comparisons done
     std::cout << "LL Rotations: "       << LLTot            << std::endl;   //Total Left-Left rotations done
     std::cout << "LR Rotations: "       << LRTot            << std::endl;   //Total Left-Right rotations done
     std::cout << "RR Rotations: "       << RRTot            << std::endl;   //Total Right-Right rotations done
     std::cout << "RL Rotations: "       << RLTot            << std::endl;   //Total Right-Left rotations done
     std::cout << "No rotation needed: " << NoRotTot         << std::endl;   //Total times Insert was called with no rotation
-
 
 }   //End of printMetrics method
 
