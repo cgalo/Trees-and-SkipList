@@ -40,6 +40,7 @@ private:
     long refChanges;                //Total reference changes
     std::mt19937 coin;              //For random coin flip
 
+
     //Methods needed for SL
     Node* find(char word[]);        //Search of node in the SL, return the node with the given parameter in the SkipList
     void createNewLevel();          //Create a new level/lane SkipList

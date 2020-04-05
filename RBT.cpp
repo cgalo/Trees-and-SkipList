@@ -319,7 +319,6 @@ void RBT::displayStatistics()
     std::cout << "Case 1 Problems: "    << totCaseOne       << std::endl;   //Total case 1 completed
     std::cout << "Case 2 Problems: "    << totCaseTwo       << std::endl;   //Total case 2 completed
     std::cout << "Case 3 Problems: "    << totCaseThree     << std::endl;   //Total case 3 completed
-    std::cout << "Elapsed Time: "       << std::endl;   //Elapsed Time
 }   //End of print method
 
 void RBT::inOrderTraversal(RBT::Node *node)

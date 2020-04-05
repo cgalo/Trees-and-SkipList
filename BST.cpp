@@ -173,5 +173,4 @@ void BST::displayStatistics()
     std::cout << "Height: "             << height           << std::endl;   //Height of the tree
     std::cout << "Key Comparisons: "    << totKeyComparison << std::endl;   //Total key comparisons done
     std::cout << "Reference Changes: "  << refChanges       << std::endl;   //Total reference changes done
-    std::cout << "Elapsed Time: "       << std::endl;   //Elapsed Time
 }   //End of print method

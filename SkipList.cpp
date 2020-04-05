@@ -200,7 +200,6 @@ void SkipList::displayStatistics()
      *  - Elapsed Time
      *  */
 
-
     //Display results
     std::cout << "\nSkipList Results"   << std::endl;
     std::cout << "Slow Lane nodes: "    << distinctWords    << std::endl;   //Total nodes in the slow-lane
@@ -211,7 +210,6 @@ void SkipList::displayStatistics()
     std::cout << "Total Words: "        << totWords         << std::endl;   //Total words
     std::cout << "Key Comparisons: "    << totKeyComparison << std::endl;   //Total key comparisons done
     std::cout << "Reference Changes: "  << refChanges       << std::endl;
-    std::cout << "Elapsed Time: "       << std::endl;
     printLanes();                                                           //Print lane & nodes per lane
 }   //End of print method
 

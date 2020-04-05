@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>      //To read files
+#include <time.h>       //To track elapsed time
+
 //The following are for the Trees & SkipList classes
 #include "BST.h"        //Binary Search Tree
 #include "SkipList.h"   //SkipList class
@@ -31,6 +33,7 @@ int main()
             cin.get(c);
             exit(1);
         }
+        clock_t t = clock();  //To track the time of insertion for the current data structure
         iPtr = 0;
         inFile.get(c);  // priming read
         while (!inFile.eof()) {
@@ -57,11 +60,12 @@ int main()
         // If the file doesn't end with a delimiter, it will leave the last word unprocessed.
         // Insert once more, and display the statistics for this structure...
         //
-
+        t = clock() - t;
         if (pass == 2) {if (strlen(chari))      RBT_T->Insert(chari);   RBT_T->displayStatistics();}    // RBT
         else if (pass == 3) {if (strlen(chari)) AVL_T->Insert(chari);   AVL_T->displayStatistics();}    // AVL
         else if (pass == 4) {if (strlen(chari)) BST_T->Insert(chari);   BST_T->displayStatistics();}    // BST
-        else if (pass == 5) {if (strlen(chari)) SL->Insert(chari);           SL->displayStatistics();}       // skip list
+        else if (pass == 5) {if (strlen(chari)) SL->Insert(chari);           SL->displayStatistics();}  // skip list
+        cout << "Elapsed Time (sec): " << ((float)t)/CLOCKS_PER_SEC << endl;
     }
     return 0;
 }   //End of main function
